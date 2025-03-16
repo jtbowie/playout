@@ -35,3 +35,18 @@ class HTMLNode:
         else:
             output += "props=None, "
         return output[:-2] + ")"
+
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag, value, props=None):
+        super().__init__(tag=tag, value=value, props=props)
+
+    def to_html(self):
+        if not self.value:
+            raise ValueError("No value Node")
+        if not self.tag:
+            return self.value
+        else:
+            if self.props:
+                return f"<{self.tag}{super().props_to_html()}>{self.value}</{self.tag}>"
+            return f"<{self.tag}>{self.value}</{self.tag}>"

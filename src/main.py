@@ -1,4 +1,4 @@
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode
 from textnode import TextNode, TextType
 
 
@@ -15,5 +15,7 @@ def main():
     )
     print(html_node)
 
+    leaf = LeafNode(value="This is a paragraph", tag="p")
+    print(leaf.to_html())
 
 main()
