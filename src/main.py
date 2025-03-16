@@ -1,6 +1,6 @@
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode, TextType
-from util import split_nodes_by_markdown
+from util import extract_markdown_images, split_nodes_by_markdown
 
 
 def main():
@@ -42,6 +42,18 @@ def main():
     node = TextNode("This is *bold markdown!!", TextType.TEXT)
     output = split_nodes_by_markdown([node], "*", TextType.BOLD)
     print(output)
+
+    print(
+        extract_markdown_images(
+            "Test image: ![image](https://boot.dev/images/hero.png) incoming!"
+        )
+    )
+    print(
+        extract_markdown_images(
+            "Test image: ![hero-image](https://boot.dev/images/hero.png) incoming! \
+                Also test image: ![villain-image](https://boot.dev/images/villain.png)"
+        )
+    )
 
 
 main()
