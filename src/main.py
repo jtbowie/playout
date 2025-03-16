@@ -1,5 +1,6 @@
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode, TextType
+from util import split_nodes_by_markdown
 
 
 def main():
@@ -29,6 +30,18 @@ def main():
     )
 
     print(node.to_html())
+
+    node = TextNode("This is *bold* markdown!!", TextType.TEXT)
+    output = split_nodes_by_markdown([node], "*", TextType.BOLD)
+    print(output)
+
+    node = TextNode("This is *bold markdown*!!", TextType.TEXT)
+    output = split_nodes_by_markdown([node], "*", TextType.BOLD)
+    print(output)
+
+    node = TextNode("This is *bold markdown!!", TextType.TEXT)
+    output = split_nodes_by_markdown([node], "*", TextType.BOLD)
+    print(output)
 
 
 main()
