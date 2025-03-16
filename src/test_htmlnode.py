@@ -2,7 +2,7 @@ import unittest
 
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode, TextType
-from util import text_node_to_htmlnode
+from util import split_nodes_by_markdown, text_node_to_htmlnode
 
 
 class TestiHTMLNode(unittest.TestCase):
@@ -68,6 +68,18 @@ class TestiHTMLNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.value, node.text)
         self.assertEqual(html_node.props["href"], node.url)
+
+    def test_markdown_textnode_parser(self):
+        node = TextNode("This is *bold* text!!", TextType.TEXT)
+        markdown_node = split_nodes_by_markdown([node], "*", TextType.BOLD)
+        self.assertEqual(
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("bold", TextType.BOLD),
+                TextNode(" text!!", TextType.TEXT),
+            ],
+            markdown_node,
+        )
 
 
 if __name__ == "__main__":
