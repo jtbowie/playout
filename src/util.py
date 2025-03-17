@@ -54,11 +54,67 @@ def split_nodes_by_markdown(old_nodes, delimiter, text_type):
     return output
 
 
-def extract_markdown_images(text):
-    matches = re.findall(r"[^!]+!\[([^\]]+)\W+([^\)]+)", text)
+def extract_markdown(text, type="links"):
+    if type == "images":
+        matches = re.findall(r"!\[([^\]]+)\W+([^\)]+)", text)
+    else:
+        matches = re.findall(r"[^!]\[([^\]]+)\]\(([^)]+)\)", text)
+
     return matches
 
 
-def extract_markdown_links(text):
-    matches = re.findall(r"[^!]\[([^\]]+)\]\(([^)]+)\)", text)
-    return matches
+def parse_matches(matches, node, type="links"):
+    start = 0
+    new_node = []
+
+    for match in matches:
+        if type == "images":
+            token = f"![{match[0]}]({match[1]})"
+        else:
+            token = f"[{match[0]}]({match[1]})"
+
+        try:
+            token_start = node.text.index(token)
+        except Exception as e:
+            raise ValueError(f"{e}: Could not find {token} in {node.text}")
+
+        new_node.append(TextNode(node.text[start:token_start], TextType.TEXT))
+        new_node.append(TextNode(match[0], TextType.IMAGE, match[1]))
+
+        print("Start: ", start, "Token: ", token, "Token Start: ", token_start)
+        start = token_start + len(token) + 1
+
+    print("Start: ", start, "Len: ", len(node.text))
+
+    if start < len(node.text) - 1:
+        new_node.append(TextNode(node.text[start:], TextType.TEXT))
+
+    return new_node
+
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            raise ValueError("TextNode not TEXT Node!")
+        matches = extract_markdown(node.text, "images")
+        if not len(matches):
+            return node
+        new_nodes.append(parse_matches(matches, node, "images"))
+
+    return new_nodes
+
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            raise ValueError("TextNode not TEXT Node!")
+        matches = extract_markdown(node.text, "links")
+        if not len(matches):
+            return node
+        new_nodes.append(parse_matches(matches, node, "links"))
+
+    return new_nodes

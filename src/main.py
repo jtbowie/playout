@@ -1,6 +1,7 @@
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode, TextType
-from util import extract_markdown_images, split_nodes_by_markdown
+from util import (extract_markdown, split_nodes_by_markdown, split_nodes_image,
+                  text_node_to_htmlnode)
 
 
 def main():
@@ -44,16 +45,37 @@ def main():
     print(output)
 
     print(
-        extract_markdown_images(
-            "Test image: ![image](https://boot.dev/images/hero.png) incoming!"
+        extract_markdown(
+            "Test image: ![image](https://boot.dev/images/hero.png) incoming!",
+            'images'
         )
     )
     print(
-        extract_markdown_images(
-            "Test image: ![hero-image](https://boot.dev/images/hero.png) incoming! \
-                Also test image: ![villain-image](https://boot.dev/images/villain.png)"
+        extract_markdown(
+            "Test image: ![hero-image](https://boot.dev/images/hero.png) incoming! Also test image: ![villain-image](https://boot.dev/images/villain.png)",
+            'images'
         )
     )
+
+    text_nodes = split_nodes_image(
+        [
+            TextNode(
+                "Test image: ![hero-image](https://boot.dev/images/hero.png) incoming!  "
+                "Test image2: ![vkillain-image](https://boot.dev/images/villain.png) incoming!",
+                TextType.TEXT,
+            )
+        ]
+    )
+
+    image_html_nodes = []
+    print(text_nodes)
+
+    for node_set in text_nodes:
+        for node in node_set:
+            image_html_nodes.append(text_node_to_htmlnode(node))
+
+    for tag in image_html_nodes:
+        print(tag)
 
 
 main()
