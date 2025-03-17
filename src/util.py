@@ -79,12 +79,12 @@ def parse_matches(matches, node, type="links"):
             raise ValueError(f"{e}: Could not find {token} in {node.text}")
 
         new_node.append(TextNode(node.text[start:token_start], TextType.TEXT))
-        new_node.append(TextNode(match[0], TextType.IMAGE, match[1]))
+        if type == "images":
+            new_node.append(TextNode(match[0], TextType.IMAGE, match[1]))
+        else:
+            new_node.append(TextNode(match[0], TextType.LINK, match[1]))
 
-        print("Start: ", start, "Token: ", token, "Token Start: ", token_start)
-        start = token_start + len(token) + 1
-
-    print("Start: ", start, "Len: ", len(node.text))
+        start = token_start + len(token)
 
     if start < len(node.text) - 1:
         new_node.append(TextNode(node.text[start:], TextType.TEXT))
