@@ -36,24 +36,26 @@ def main():
     output = split_nodes_by_markdown([node], "*", TextType.BOLD)
     print(output)
 
-    node = TextNode("This is *bold markdown*!!", TextType.TEXT)
-    output = split_nodes_by_markdown([node], "*", TextType.BOLD)
+    node = TextNode("This is _italic_ markdown!!", TextType.TEXT)
+    output = split_nodes_by_markdown([node], "_", TextType.TEXT)
     print(output)
 
-    node = TextNode("This is *bold markdown!!", TextType.TEXT)
+    node = TextNode("This is *bold* and _italic_ markdown!!", TextType.TEXT)
     output = split_nodes_by_markdown([node], "*", TextType.BOLD)
+    node_list = split_nodes_by_markdown([output.pop()], "_", TextType.ITALIC)
+    for new_node in node_list:
+        output.append(new_node)
     print(output)
 
     print(
         extract_markdown(
-            "Test image: ![image](https://boot.dev/images/hero.png) incoming!",
-            'images'
+            "Test image: ![image](https://boot.dev/images/hero.png) incoming!", "images"
         )
     )
     print(
         extract_markdown(
             "Test image: ![hero-image](https://boot.dev/images/hero.png) incoming! Also test image: ![villain-image](https://boot.dev/images/villain.png)",
-            'images'
+            "images",
         )
     )
 

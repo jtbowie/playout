@@ -22,6 +22,20 @@ def text_node_to_htmlnode(text_node):
         return LeafNode(tag="a", value=text_node.text, props={"href": text_node.url})
 
 
+def make_nodes(working_set, output, text_type):
+    while working_set:
+        node_list = [
+            TextNode(working_set.pop(), TextType.TEXT),
+            TextNode(working_set.pop(), text_type),
+            TextNode(working_set.pop(), TextType.TEXT),
+        ]
+
+        if not node_list[2].text:
+            node_list.pop()
+
+        output.extend(node_list)
+
+
 def split_nodes_by_markdown(old_nodes, delimiter, text_type):
     output = []
 
@@ -34,7 +48,6 @@ def split_nodes_by_markdown(old_nodes, delimiter, text_type):
         working_set_len = len(working_set)
 
         if working_set_len < 3:
-            output.append(node)
             continue
 
         working_set.reverse()
@@ -42,14 +55,7 @@ def split_nodes_by_markdown(old_nodes, delimiter, text_type):
         if working_set_len > 2 and not working_set_len % 2:
             raise Exception("This is not valid markdown syntax")
 
-        while working_set:
-            print(len(working_set))
-            node_list = [
-                TextNode(working_set.pop(), TextType.TEXT),
-                TextNode(working_set.pop(), text_type),
-                TextNode(working_set.pop(), TextType.TEXT),
-            ]
-            output.extend(node_list)
+        make_nodes(working_set, output, text_type)
 
     return output
 

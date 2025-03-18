@@ -2,8 +2,13 @@ import unittest
 
 from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode, TextType
-from util import (extract_markdown, split_nodes_by_markdown, split_nodes_image,
-                  split_nodes_link, text_node_to_htmlnode)
+from util import (
+    extract_markdown,
+    split_nodes_by_markdown,
+    split_nodes_image,
+    split_nodes_link,
+    text_node_to_htmlnode,
+)
 
 
 class TestiHTMLNode(unittest.TestCase):
@@ -78,6 +83,17 @@ class TestiHTMLNode(unittest.TestCase):
                 TextNode("This is ", TextType.TEXT),
                 TextNode("bold", TextType.BOLD),
                 TextNode(" text!!", TextType.TEXT),
+            ],
+            markdown_node,
+        )
+
+    def test_markdown_textnode_no_tail(self):
+        node = TextNode("This is *BOLD*", TextType.TEXT)
+        markdown_node = split_nodes_by_markdown([node], "*", TextType.BOLD)
+        self.assertEqual(
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("BOLD", TextType.BOLD),
             ],
             markdown_node,
         )
