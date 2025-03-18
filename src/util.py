@@ -48,6 +48,8 @@ def split_nodes_by_markdown(old_nodes, delimiter, text_type):
         working_set_len = len(working_set)
 
         if working_set_len < 3:
+            for item in working_set:
+                output.append(TextNode(item, TextType.TEXT))
             continue
 
         working_set.reverse()
@@ -103,11 +105,13 @@ def split_nodes_image(old_nodes):
 
     for node in old_nodes:
         if node.text_type != TextType.TEXT:
-            raise ValueError("TextNode not TEXT Node!")
+            new_nodes.append(node)
+            continue
         matches = extract_markdown(node.text, "images")
         if not len(matches):
-            return node
-        new_nodes.append(parse_matches(matches, node, "images"))
+            new_nodes.append(node)
+            continue
+        new_nodes.extend(parse_matches(matches, node, "images"))
 
     return new_nodes
 
@@ -117,10 +121,23 @@ def split_nodes_link(old_nodes):
 
     for node in old_nodes:
         if node.text_type != TextType.TEXT:
-            raise ValueError("TextNode not TEXT Node!")
+            new_nodes.append(node)
+            continue
         matches = extract_markdown(node.text, "links")
         if not len(matches):
-            return node
-        new_nodes.append(parse_matches(matches, node, "links"))
+            new_nodes.append(node)
+            continue
+        new_nodes.extend(parse_matches(matches, node, "links"))
 
     return new_nodes
+
+
+def text_to_textnodes(text):
+    node = TextNode(text, TextType.TEXT)
+    nodes = split_nodes_by_markdown([node], "**", TextType.BOLD)
+    nodes = split_nodes_by_markdown(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_by_markdown(nodes, "`", TextType.CODE)
+    nodes = split_nodes_link(nodes)
+    nodes = split_nodes_image(nodes)
+
+    return nodes
