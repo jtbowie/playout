@@ -141,3 +141,24 @@ def text_to_textnodes(text):
     nodes = split_nodes_image(nodes)
 
     return nodes
+
+
+def markdown_to_blocks(markdown):
+    output = []
+    block = []
+
+    scratchpad = markdown.split("\n")
+    for line in scratchpad:
+        line = line.strip()
+        if not line:
+            if len(block):
+                output.append("\n".join(block))
+                block = []
+        else:
+            print(f'line = "{line}"')
+            block.append(line)
+
+    if block:
+        output.append("\n".join(block))
+
+    return output

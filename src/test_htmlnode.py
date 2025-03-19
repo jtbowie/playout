@@ -4,6 +4,7 @@ from htmlnode import HTMLNode, LeafNode, ParentNode
 from textnode import TextNode, TextType
 from util import (
     extract_markdown,
+    markdown_to_blocks,
     split_nodes_by_markdown,
     split_nodes_image,
     split_nodes_link,
@@ -76,7 +77,6 @@ class TestiHTMLNode(unittest.TestCase):
         self.assertEqual(html_node.value, node.text)
         self.assertEqual(html_node.props["href"], node.url)
 
-    """
     def test_markdown_textnode_parser(self):
         node = TextNode("This is *bold* text!!", TextType.TEXT)
         markdown_node = split_nodes_by_markdown([node], "*", TextType.BOLD)
@@ -99,7 +99,6 @@ class TestiHTMLNode(unittest.TestCase):
             ],
             markdown_node,
         )
-    """
 
     def test_extract_markdown_images(self):
         matches = extract_markdown(
@@ -179,6 +178,64 @@ class TestiHTMLNode(unittest.TestCase):
                 TextNode("link", TextType.LINK, "https://boot.dev"),
             ],
             test_output,
+        )
+
+    def test_markdown_to_block(self):
+        md = """
+    This is **bolded** paragraph
+    
+    This is another paragraph with _italic_ text and `code` here
+    This is the same paragraph on a new line
+    
+    - This is a list
+    - with items
+    """
+        blocks = markdown_to_blocks(md)
+
+        print("============ markdown_to_blocks =============")
+        print(blocks)
+        print("=============================================")
+
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )
+
+    def test_markdown_to_block_mmultiple_blank_lines(self):
+        md = """
+        This block should be one line
+
+        This block should be
+        two lines
+
+
+        This block
+        Should be
+        Three lines
+
+
+
+        There should be four blocks.
+        """
+
+        blocks = markdown_to_blocks(md)
+
+        print("============ markdown_to_blocks =============")
+        print(blocks)
+        print("=============================================")
+
+        self.assertEqual(
+            blocks,
+            [
+                "This block should be one line",
+                "This block should be\ntwo lines",
+                "This block\nShould be\nThree lines",
+                "There should be four blocks.",
+            ],
         )
 
 
