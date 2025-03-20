@@ -13,7 +13,7 @@ from util import (
 )
 
 
-class TestiHTMLNode(unittest.TestCase):
+class TestHTMLNode(unittest.TestCase):
 
     def test_eq(self):
         html_node = HTMLNode(
